@@ -1,0 +1,37 @@
+
+
+{% block content %}
+
+
+
+
+<div class="outer">
+
+ 
+
+    <div class="inner">
+
+    {% for room in rooms  %}
+    
+        <div class="innermost">
+
+            {% comment %}  {% endcomment %}
+            
+            {% comment %} <a href="{% url 'updatebook' room.id %}">Edit</a> {% endcomment %}
+            <a href="{% url 'deletebook' room.id %}">Delete</a>
+          
+            {% comment %} <a href="/updatebook/{{room.id}}">Edit</a> {% endcomment %}
+
+            <h5>{{room.id}} -- {{room.book_name}} -- {{room.book_author}} -- {{room.book_id}} -- {{room.book_issue_date}}</h5>
+
+        </div>
+
+    
+    {% endfor %}        
+
+    </div>
+
+</div>
+
+
+{% endblock content %}

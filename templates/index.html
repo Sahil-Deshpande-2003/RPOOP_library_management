@@ -1,0 +1,42 @@
+{% include 'navbar.html' %}
+
+<style>
+
+  .container{
+
+
+
+   display:grid;
+
+   grid-column-gap:9px;
+
+   grid-row-gap:20px;
+
+    grid-template-columns: auto auto auto auto  ;
+
+    
+
+  }
+
+</style>
+
+<h2 class="heading">Categories</h2>
+
+ 
+
+  <div class="container">
+
+  {% for room in rooms  %}
+  
+  
+        <div class="item"><a href="{% url 'category' room.book_category %}">{{room.book_category}}</a></div>  
+        
+
+          
+
+  
+  {% endfor %}        
+
+  </div>
+
+
