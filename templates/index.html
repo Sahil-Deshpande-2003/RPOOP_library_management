@@ -1,42 +1,22 @@
 {% include 'navbar.html' %}
 
-<style>
-
-  .container{
-
-
-
-   display:grid;
-
-   grid-column-gap:9px;
-
-   grid-row-gap:20px;
-
-    grid-template-columns: auto auto auto auto  ;
-
-    
-
-  }
-
-</style>
+{% load static %}
+<link rel="stylesheet" href="{% static 'index.css' %}">
 
 <h2 class="heading">Categories</h2>
 
- 
-
-  <div class="container">
-
-  {% for room in rooms  %}
-  
-  
-        <div class="item"><a href="{% url 'category' room.book_category %}">{{room.book_category}}</a></div>  
-        
-
-          
-
-  
-  {% endfor %}        
-
-  </div>
+<div class="container text-center d-flex flex-wrap">
+    {% for category in categories %}
+      <div class="card m-3" style="width: 18rem;">
+        <img src="https://twinklelearning.in/uploads/noimage.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <a href="{% url 'category' category.name %}">
+            <h5 class="card-title">{{category.name}}</h5>
+          </a>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          </div>
+        </div>
+      {% endfor %}  
+</div>
 
 
