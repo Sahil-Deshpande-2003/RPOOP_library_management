@@ -14,18 +14,52 @@ def index(request):
     return render(request,'index.html', context)
 
 def categories(request,category):
-    print(category)
     rooms = Room.objects.filter(category__name = category)
-    print(rooms)
-    context = {'rooms':rooms}
+    context = {'rooms':rooms , 'category':category}
     return render(request, 'category.html', context)
 
+def book(request,book):
+    room = Room.objects.get(book_name = book)
+    context = {'room':room}
+    return render(request, 'book.html', context)
 
+def create_book(request):
+    form = RoomForm()
+    categories = Category.objects.all()
+    if request.method == 'POST':
+        try:
+            book_name = request.POST.get('book_name')
+            book_description = request.POST.get('book_description')
+            author = request.POST.get('author')
+            category = request.POST.get('category')
+            image_link = request.POST.get('image_link')
+            book_quantity = request.POST.get('book_quantity')
+            category_obj = Category.objects.get(name=category)
+            room = Room(book_name=book_name, book_description=book_description, author=author, category=category_obj, image_link=image_link, book_quantity=book_quantity)
+            room.save()
+        except:
+            pass
+    context = {'form' : form, 'categories':categories }
+    return render(request,'create.html',context)
 
-def displayBooks(request):
-    rooms = Room.objects.all()
-    context  = {'rooms':rooms}
-    return render(request,'display.html',context)
+def issue_book(request,book):
+    room = Room.objects.get(book_name = book)
+    print(room)    
+    pass
+
+def UpdateBookUser(request,pk):
+    room = Room.objects.get(id=pk)
+    form = RoomForm(instance=room)
+    context={}
+    return render(request,'room_form.html',context)
+
+def deletebookUser(request,pk):
+    room = Room.objects.get(id=pk)
+    if request.method=='POST':
+        room.delete()
+        return redirect('display')
+    return render(request,'delete.html',{'obj':room})
+
 
 def loginUser(request):
     if request.method=="POST":
@@ -42,35 +76,3 @@ def loginUser(request):
 def logoutUser(request):
     logout(request)
     return redirect("/login")
-
-def aboutUser(request):
-    return render(request,"about.html")
-
-def mathUser(request):
-    return render(request,"maths.html")
-
-def addBookUser(request):
-    form = RoomForm()
-    if request.method == 'POST':
-        form = RoomForm(request.POST)
-        if (form.is_valid):
-            form.save()
-            return redirect('home')
-    context = {'form':form}
-    return render(request,'book_form.html',context)
-
-def UpdateBookUser(request,pk):
-    room = Room.objects.get(id=pk)
-    form = RoomForm(instance=room)
-    context={}
-    return render(request,'room_form.html',context)
-
-def deletebookUser(request,pk):
-    room = Room.objects.get(id=pk)
-    if request.method=='POST':
-        room.delete()
-        return redirect('display')
-    return render(request,'delete.html',{'obj':room})
-
-
-

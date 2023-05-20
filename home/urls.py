@@ -6,12 +6,13 @@ urlpatterns = [
     # path('',views.index,name="home"),
     path('', views.index, name="home"),
     path('category/<str:category>/', views.categories, name="category"),
+
     path('login',views.loginUser,name="login"),
     path('logout',views.logoutUser,name="logout"),
-    path('about',views.aboutUser,name="about"),
-    path('maths',views.mathUser,name="maths"),
-    path('display',views.displayBooks,name="display"),
-    path('addbook',views.addBookUser,name="addbook"),
+
+    path('book/<str:book>/', views.book, name="book"),
+    path('issue/<str:book>/', views.issue_book, name="issue"),
+    path('create',views.create_book,name="addbook"),
     path('updatebook/<str:pk>/',views.UpdateBookUser,name="updatebook"),
     path('deletebook/<str:pk>/',views.deletebookUser,name="deletebook"),
 
