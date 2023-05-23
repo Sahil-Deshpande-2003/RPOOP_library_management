@@ -32,17 +32,37 @@
             <div class="row m-3">
                 <h5 class="text-white">{{room.book_quantity}}</h5>
             </div>
+
+            {% if is_held %}
             <div class="row m-3">
-                <a href="{% url 'issue' room.book_name %}">
-                    <button type="submit" class="btn btn-success w-100">Issue</button>
+                <a href="{% url 'request' room.id %}">
+                    <button type="submit" class="btn btn-danger w-50">Return</button>
                 </a>
             </div>
+            {% elif is_requested %}
             <div class="row m-3">
-                <button class="btn btn-primary">Update</button>
+                <a href="{% url 'request' room.id %}">
+                    <button type="submit" class="btn btn-danger w-50">Retract Borrow Request</button>
+                </a>
             </div>
+            {% elif not is_requested %}
             <div class="row m-3">
-                <button class="btn btn-danger">Delete</button>
+                <a href="{% url 'request' room.id %}">
+                    <button type="submit" class="btn btn-success w-50">Borrow</button>
+                </a>
             </div>
+
+            {% endif %}
+
+            {% if is_librarian %}
+                <div class="row m-3">
+                    <button class="btn btn-primary">Update</button>
+                </div>
+                <div class="row m-3">
+                    <button class="btn btn-danger">Delete</button>
+                </div>
+            {% endif %}
+
           </div>
         </div>
       </div>

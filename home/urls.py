@@ -10,9 +10,16 @@ urlpatterns = [
     path('login',views.loginUser,name="login"),
     path('logout',views.logoutUser,name="logout"),
 
-    path('book/<str:book>/', views.book, name="book"),
-    path('issue/<str:book>/', views.issue_book, name="issue"),
-    path('create',views.create_book,name="addbook"),
+    path('user/<str:pk>/', views.user, name="user"),
+    path('/user/create',views.createUser,name="createuser"),
+
+    path('book/<str:pk>/', views.book, name="book"),
+    path('book/create',views.create_book,name="addbook"),
+    path('request/<str:pk>/', views.request_book, name="request"),
+    
+
+    path('book/approve/<str:pk>/', views.approve_book, name="approve"),
+
     path('updatebook/<str:pk>/',views.UpdateBookUser,name="updatebook"),
     path('deletebook/<str:pk>/',views.deletebookUser,name="deletebook"),
 

@@ -1,22 +1,64 @@
 {% include 'navbar.html' %}
 
 {% load static %}
+<title>Computer Science Library</title>
 <link rel="stylesheet" href="{% static 'index.css' %}">
 
-<h2 class="heading">Categories</h2>
+<body class="bg-black">
+  {% if is_librarian %}
+  <h1 class="display-1 my-4 text-white w-100 text-center">Issue Requests</h1>
+  
+  <div class="container bg-dark w-100">
+        <div class="accordion" id="accordionExample">
+          {% for request in requests %}
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                {{request.book_name}}
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-10">
+                    Requester Name:
+                    <a href="/user/{{request.requester_id}}">
+                      {{request.requester_name}}
+                    </a>
+                    <br>
+                    Copies Available: {{request.copies_available}}
+                  </div>
+                  <div class="col">
+                    <a href="/book/approve/{{request.request_id}}">
+                      <button type="button" class="btn btn-success mx-1">Approve</button>
+                    </a>
+                      <button type="button" class="btn btn-danger mx-1">Reject</button>
+                  </div>
+                </div>
 
-<div class="container text-center d-flex flex-wrap">
-    {% for category in categories %}
-      <div class="card m-3" style="width: 18rem;">
-        <img src="https://twinklelearning.in/uploads/noimage.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-          <a href="{% url 'category' category.name %}">
-            <h5 class="card-title">{{category.name}}</h5>
-          </a>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              </div>
+            </div>
           </div>
+          {% endfor %}  
         </div>
-      {% endfor %}  
-</div>
+  </div>
+
+  {% endif %}
+
+  <h1 class="display-1 mt-2 text-white w-100 text-center">Categories</h1>
+  
+  <div class="container text-center d-flex flex-wrap justify-content-center">
+      {% for category in categories %}
+        <div class="card m-3" style="width: 15rem;">
+          <img src="https://twinklelearning.in/uploads/noimage.jpg" class="card-img-top" alt="...">
+          <div class="card-body">
+            <a href="{% url 'category' category.name %}">
+              <h5 class="card-title">{{category.name}}</h5>
+            </a>
+            </div>
+          </div>
+        {% endfor %}  
+  </div>
+</body>
 
 

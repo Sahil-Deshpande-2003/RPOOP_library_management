@@ -1,0 +1,22 @@
+{% include 'navbar.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{user}}</title>
+</head>
+<body class="bg-black">
+    <div class="col-2 p-5 b-1">
+        <div class="card" style="width: 12rem;">
+            <img src="data:image/png;base64,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" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{{user}}</h5>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            </div>
+          </div>
+    </div>
+</body>
+</html>
