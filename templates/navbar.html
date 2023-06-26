@@ -11,19 +11,20 @@
   <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top" data-bs-theme="dark">
     <div class="container-fluid">
       <a class="navbar-brand" style="font-size: 30px; letter-spacing: 2px; font-family: 'Times New Roman', Times, serif;" href="/">CS LIBRARY</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <a href="/category/create">
-          <button class="btn btn-success mx-2" type="submit">Create Category</button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: 57.5em;">
+        <a href="/category/create" style="text-decoration: none; color: white; padding: 1em;">
+          Create Category
         </a>
-        <a href="/book/create">
-          <button class="btn btn-success mx-2" type="submit">Create Book</button>
+        <a href="/book/create" style="text-decoration: none; color: white; padding: 1em;">
+          Create Book
         </a>
         {% if user.is_authenticated %}
         <a href="/logout">
           <button class="btn btn-outline-danger mx-2" type="submit">Logout</button>
+        </a>
+        {% else %}
+        <a href="/login">
+          <button class="btn btn-outline-success mx-2" type="submit">Login</button>
         </a>
         {% endif %}
       </div>
