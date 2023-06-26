@@ -13,11 +13,11 @@
 <body class="bg-black">
     <div class="container text-center d-flex flex-wrap">
         {% for room in rooms %}
-          <div class="card m-3" style="width: 18rem;">
-            <img src="{{room.image_link}}" class="card-img-top" alt="...">
+          <div class="card m-3 bg-black" style="width: 18rem;">
+            <img src="{{room.image_link}}" class="card-img-top" style="height: 15 rem; object-fit: cover;" alt="...">
             <div class="card-body">
-              <a href="{% url 'book' room.id %}">
-                <h5 class="card-title">{{room.book_name}}</h5>
+              <a href="{% url 'book' room.id %}" style="text-decoration: none;">
+                <h5 class="card-title" style="text-transform: uppercase; letter-spacing: 4px; color: white;">{{room.book_name}}</h5>
               </a>
               </div>
             </div>

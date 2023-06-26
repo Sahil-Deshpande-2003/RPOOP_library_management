@@ -6,7 +6,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import logout,authenticate,login
 from .models import Room, Category, Librarian, Student, Requests
-from .forms import RoomForm
+from .forms import RoomForm, CategoryForm
 
 
 
@@ -19,8 +19,10 @@ def index(request):
     if (request.user.groups.filter(name="Librarian").exists()):
         categories = Category.objects.all()
         requests = Requests.objects.filter(is_issued=False)
+        circulating_books = Requests.objects.filter(is_returned=False).filter(is_issued=True)
+        print(circulating_books)
         is_librarian = True
-        context = {"categories" : categories, "is_librarian": is_librarian, "requests": requests}
+        context = {"categories" : categories, "is_librarian": is_librarian, "requests": requests, "circulating_books": circulating_books}
 
     return render(request,'index.html', context)
 
@@ -30,34 +32,57 @@ def categories(request,category):
     context = {'rooms':rooms , 'category':category}
     return render(request, 'category.html', context)
 
+def create_category(request):
+    if request.user.is_anonymous:
+        return redirect("/login")
+    
+    if (request.user.groups.filter(name="Student").exists()):
+        return redirect("/")
+
+    form = CategoryForm()
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('book_name')
+            description = request.POST.get('book_description')
+            image_link = request.POST.get('image_link')
+            new_category = Category(name=name, description=description, image_link=image_link)   
+            new_category.save()
+            sorted_categories = Category.objects.all().order_by('name')
+            print(sorted_categories)
+            return redirect('/')
+        except:
+            pass
+    context = {'form' : form}
+    return render(request,'create_category.html',context)
+
 
 def book(request,pk):
     room = Room.objects.get(id = pk)
+    context = {'room':room}
     is_librarian = True
-    if (request.user.groups.filter(name="Librarian").exists()):
-        context = {'room':room, "is_librarian": is_librarian}
-    else:
-        is_held = False
-        is_requested = False
-        student = Student.objects.get(mis=request.user.username)
+    if not request.user.is_anonymous:
+        if (request.user.groups.filter(name="Librarian").exists()):
+            context = {'room':room, "is_librarian": is_librarian}
+        else:
+            is_held = False
+            is_requested = False
+            student = Student.objects.get(mis=request.user.username)
 
-        if (student.held_books != ""):
-            held_books = json.loads(student.held_books)
-            for book in held_books:
-                if (book["id"] == room.id):
-                    is_held = True
-                    break
+            if (student.held_books != ""):
+                held_books = json.loads(student.held_books)
+                for book in held_books:
+                    if (book["id"] == room.id):
+                        is_held = True
+                        break
 
-        if (student.requested_books != ""):
-            requested_books = json.loads(student.requested_books)
-            for book in requested_books:
-                if (book["id"] == room.id):
-                    is_requested = True
-                    break
+            if (student.requested_books != ""):
+                requested_books = json.loads(student.requested_books)
+                for book in requested_books:
+                    if (book["id"] == room.id):
+                        is_requested = True
+                        break
 
-        print(is_held, is_requested)
-
-        context = {'room':room, "is_requested": is_requested, "is_held": is_held}
+            context = {'room':room, "is_requested": is_requested, "is_held": is_held}
 
     return render(request, 'book.html', context)
 
@@ -132,7 +157,41 @@ def request_book(request,pk):
 
     return redirect('/book/'+pk)
 
+def cancel_request(request,pk):
+    if request.user.is_anonymous:
+        return redirect("/login")
+    
+    room = Room.objects.get(id=pk)
+    student = Student.objects.get(mis=request.user.username)
 
+    requested_books = json.loads(student.requested_books)
+    for requested_book in requested_books:
+        if (requested_book["id"] == room.id):
+            requested_books.remove(requested_book)
+            break
+    student.set_requested_books(requested_books)
+    student.save()
+    return redirect('/book/'+pk)
+
+def return_book(request,pk):
+    if request.user.is_anonymous:
+        return redirect("/login")
+    
+    book = Room.objects.get(id=pk)
+    student = Student.objects.get(mis=request.user.username)
+
+    held_books = json.loads(student.held_books)
+    for held_book in held_books:
+        if (held_book["id"] == book.id):
+            held_books.remove(held_book)
+            break
+    student.set_held_books(held_books)
+    student.save()
+
+    book.book_quantity = book.book_quantity + 1
+    book.save()
+
+    return redirect('/book/'+pk)
 
 def approve_book(request,pk):
     book_request = Requests.objects.get(request_id=pk)
@@ -144,6 +203,7 @@ def approve_book(request,pk):
     student = Student.objects.get(mis = book_request.requester_id)
     issuer = Librarian.objects.get(mis=request.user.username)
 
+    # remove request from requests object on the student 
     student_requests = json.loads(student.requested_books)
     for student_request in student_requests:
         if (student_request["id"] == book_request.book_id):
@@ -238,9 +298,9 @@ def loginUser(request):
     return render(request,'login.html')
 
 def logoutUser(request):
+    original_url = request.META.get('HTTP_REFERER')
     logout(request)
-    return redirect("/login")
-
+    return redirect(original_url)
 
 def user(request,pk):
     user = User.objects.get(username=pk)

@@ -5,8 +5,9 @@
 <link rel="stylesheet" href="{% static 'index.css' %}">
 
 <body class="bg-black">
-  {% if is_librarian %}
-  <h1 class="display-1 my-4 text-white w-100 text-center">Issue Requests</h1>
+  {% if is_librarian and requests %}
+
+  <h1 class="display-1 my-4 text-white w-100 text-center" style="font-family: 'Times New Roman', Times, serif;">Issue Requests</h1>
   
   <div class="container bg-dark w-100">
         <div class="accordion" id="accordionExample">
@@ -45,15 +46,51 @@
 
   {% endif %}
 
+  {% if is_librarian and circulating_books %}
+
+  <h1 class="display-1 my-4 text-white w-100 text-center">Circulating Books</h1>
+  
+  <div class="container bg-dark w-100">
+        <div class="accordion" id="accordionExample">
+          {% for book in circulating_books %}
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                {{book.book_name}}
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-10">
+                    Holder Name:
+                    <a href="/user/{{request.requester_id}}">
+                      {{book.requester_name}}
+                    </a>
+                    <br>
+                    Issued by: {{book.issuer_name}}
+                    <br>
+                    Issued on: {{book.issue_date}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}  
+        </div>
+  </div>
+
+  {% endif %}
+
   <h1 class="display-1 mt-2 text-white w-100 text-center">Categories</h1>
   
   <div class="container text-center d-flex flex-wrap justify-content-center">
       {% for category in categories %}
-        <div class="card m-3" style="width: 15rem;">
-          <img src="https://twinklelearning.in/uploads/noimage.jpg" class="card-img-top" alt="...">
-          <div class="card-body">
-            <a href="{% url 'category' category.name %}">
-              <h5 class="card-title">{{category.name}}</h5>
+        <div class="card m-3 bg-black" style="width: 18rem;">
+          <img src="{{category.image_link}}" class="card-img-top" style="height: 15rem; object-fit: cover;" alt="">
+          <div class="card-body bg-dark">
+            <a href="{% url 'category' category.name %}" style="text-decoration: none;">
+              <h3 class="card-title" style="text-transform: uppercase; letter-spacing: 4px; color: white;">{{category.name}}</h5>
             </a>
             </div>
           </div>

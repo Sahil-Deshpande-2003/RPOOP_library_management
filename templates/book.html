@@ -35,13 +35,13 @@
 
             {% if is_held %}
             <div class="row m-3">
-                <a href="{% url 'request' room.id %}">
+                <a href="{% url 'return' room.id %}">
                     <button type="submit" class="btn btn-danger w-50">Return</button>
                 </a>
             </div>
             {% elif is_requested %}
             <div class="row m-3">
-                <a href="{% url 'request' room.id %}">
+                <a href="{% url 'cancel_request' room.id %}">
                     <button type="submit" class="btn btn-danger w-50">Retract Borrow Request</button>
                 </a>
             </div>
