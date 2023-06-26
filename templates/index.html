@@ -5,6 +5,10 @@
 <link rel="stylesheet" href="{% static 'index.css' %}">
 
 <body class="bg-black">
+
+{% comment %} requests are those requests that want the book to be issued and are waiting
+for the librarian's permission {% endcomment %}
+
   {% if is_librarian and requests %}
 
   <h1 class="display-1 my-4 text-white w-100 text-center" style="font-family: 'Times New Roman', Times, serif;">Issue Requests</h1>
@@ -22,6 +26,7 @@
               <div class="accordion-body">
                 <div class="row">
                   <div class="col-10">
+                    {% comment %} used to get the issue request {% endcomment %}
                     Requester Name:
                     <a href="/user/{{request.requester_id}}">
                       {{request.requester_name}}
@@ -48,6 +53,8 @@
 
   {% if is_librarian and circulating_books %}
 
+  {% comment %} circulating_books are those which are issued and not returned{% endcomment %}
+
   <h1 class="display-1 my-4 text-white w-100 text-center">Circulating Books</h1>
   
   <div class="container bg-dark w-100">
@@ -69,8 +76,6 @@
                     </a>
                     <br>
                     Issued by: {{book.issuer_name}}
-                    <br>
-                    Issued on: {{book.issue_date}}
                   </div>
                 </div>
               </div>

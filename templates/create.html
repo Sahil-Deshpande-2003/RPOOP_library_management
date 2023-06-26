@@ -2,6 +2,8 @@
 
 {% block content %}
 {% csrf_token %}
+
+{% comment %} used to create a form {% endcomment %}
  
 
 <title>Create Book</title>
@@ -32,6 +34,10 @@
                 <select class="form-select" name="category" aria-label="Default select example">
                     {% for category in categories %}
                     <option value="{{category.name}}">{{category.name}}</option>
+                    {% comment %} 1st one is to send category name to backend other one to display category name 
+                    {% endcomment %}
+
+                    
                     {% endfor %}
                 </select>
             </div>

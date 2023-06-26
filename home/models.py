@@ -7,9 +7,9 @@ from django.contrib.auth.models import User
 
 # book_name,author,id,issue_date
 
-class Category(models.Model):
+class Category(models.Model): # for book ki categories
     name = models.CharField(max_length=200)
-    image_link = models.CharField(max_length=200, null=True)
+    image_link = models.CharField(max_length=200, null=True) # to set image
     description = models.TextField(null=True)
 
     def __str__(self):
@@ -23,7 +23,7 @@ class Room(models.Model):
     author = models.CharField(max_length=200)
     category = models.ForeignKey(
         Category,
-        on_delete=models.PROTECT,
+        on_delete=models.PROTECT, # used to reference the above category model
         blank=True,
         default=None
     )
@@ -41,10 +41,10 @@ class Librarian(models.Model):
     issued_books = models.TextField(null=True, blank=True)
 
     def set_issued_books(self, book_data):
-        self.issued_books = json.dumps(book_data)
+        self.issued_books = json.dumps(book_data) # json to string
 
     def get_issued_books(self):
-        return json.loads(self.issued_books)
+        return json.loads(self.issued_books) # string to json
     
     
     def __str__(self):
@@ -73,13 +73,13 @@ class Student(models.Model):
         return self.first_name + " " + self.last_name
     
 class Requests(models.Model):
-    request_id = models.CharField(max_length=200, primary_key=True, default=uuid.uuid4)
+    request_id = models.CharField(max_length=200, primary_key=True, default=uuid.uuid4) # randomly generated
 
     book_id = models.CharField(max_length=200)
     book_name = models.CharField(max_length=200)
     copies_available = models.PositiveSmallIntegerField(default=1)
 
-    requester_id = models.IntegerField()
+    requester_id = models.IntegerField() # MIS
     requester_name = models.CharField(max_length=200)
     request_time = models.CharField(max_length=200, null=True)
 

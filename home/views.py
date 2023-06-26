@@ -10,21 +10,30 @@ from .forms import RoomForm, CategoryForm
 
 
 
+# index is for home page
+
 def index(request):
     is_librarian = False
 
     categories = Category.objects.all()
     context = {"categories" : categories}
 
+    # we check the group for logged in user and if that group matches with the librarian group, is_librarian = True 
+
+    # requests can only be seen by student since student cant enter the if statement
+
+    # user has groups check if it is librarian
+
     if (request.user.groups.filter(name="Librarian").exists()):
         categories = Category.objects.all()
+        # requests are the books not issued
         requests = Requests.objects.filter(is_issued=False)
+        # circulating books have been issued but not returned
         circulating_books = Requests.objects.filter(is_returned=False).filter(is_issued=True)
-        print(circulating_books)
         is_librarian = True
         context = {"categories" : categories, "is_librarian": is_librarian, "requests": requests, "circulating_books": circulating_books}
 
-    return render(request,'index.html', context)
+    return render(request,'index.html', context) # goes to index.html
 
 
 def categories(request,category):
@@ -40,15 +49,13 @@ def create_category(request):
         return redirect("/")
 
     form = CategoryForm()
-    if request.method == 'POST':
+    if request.method == 'POST': # POST request is used when we have to submit the form
         try:
             name = request.POST.get('book_name')
             description = request.POST.get('book_description')
             image_link = request.POST.get('image_link')
             new_category = Category(name=name, description=description, image_link=image_link)   
             new_category.save()
-            sorted_categories = Category.objects.all().order_by('name')
-            print(sorted_categories)
             return redirect('/')
         except:
             pass
@@ -56,15 +63,18 @@ def create_category(request):
     return render(request,'create_category.html',context)
 
 
+# used to display book
+
 def book(request,pk):
     room = Room.objects.get(id = pk)
     context = {'room':room}
     is_librarian = True
     if not request.user.is_anonymous:
+        # logged in already
         if (request.user.groups.filter(name="Librarian").exists()):
             context = {'room':room, "is_librarian": is_librarian}
         else:
-            is_held = False
+            is_held = False # Checks if student has that book
             is_requested = False
             student = Student.objects.get(mis=request.user.username)
 
@@ -92,7 +102,7 @@ def create_book(request):
         return redirect("/login")
     
     if (request.user.groups.filter(name="Student").exists()):
-        return redirect("/")
+        return redirect("/") # redirect student to main page cause he cant create a book
 
     form = RoomForm()
     categories = Category.objects.all()
@@ -129,24 +139,26 @@ def request_book(request,pk):
         requester_name = student.first_name + " " + student.last_name,
         request_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
     )
+    # used to create that object
     new_request.save()
 
-    if (student.requested_books == ""):
+    if (student.requested_books == ""): # executed only once
         requested_books = [
             {
-                "id": room.id,
+                "id": new_request.id,
                 "book_name": room.book_name,
                 "requester_id": student.mis,
                 "requester_name": student.first_name + " " + student.last_name,
                 "request_time": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             }
         ]
-        student.set_requested_books(requested_books)
+        student.set_requested_books(requested_books) # converts array to string
         student.save()
     else:
-        json_data = json.loads(student.requested_books)
+        # appends requests to the array
+        json_data = json.loads(student.requested_books) # converts string to json format
         json_data.append({
-            "id": room.id,
+            "id": new_request.id,
             "book_name": room.book_name,
             "requester_id": student.mis,
             "requester_name": student.first_name + " " + student.last_name,
@@ -201,13 +213,14 @@ def approve_book(request,pk):
     book.save()
 
     student = Student.objects.get(mis = book_request.requester_id)
-    issuer = Librarian.objects.get(mis=request.user.username)
+    issuer = Librarian.objects.get(mis=request.user.username) # alloted a MIS to librarian and the found issuer using that MIS
 
     # remove request from requests object on the student 
-    student_requests = json.loads(student.requested_books)
+    student_requests = json.loads(student.requested_books) # converted the string format to json format so that we can use remove function
+
     for student_request in student_requests:
         if (student_request["id"] == book_request.book_id):
-            student_requests.remove(student_request)
+            student_requests.remove(student_request) # remove the requested book from the student_request array
             break
     student.set_requested_books(student_requests)
     student.save()
@@ -257,7 +270,7 @@ def approve_book(request,pk):
             "student_name": student.first_name + " " + student.last_name,
             "issue_time": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
         })
-        issuer.set_issued_books(json_data)
+        issuer.set_issued_books(json_data) # again convert json to string because I want to save objects
         issuer.save()
 
 
@@ -312,6 +325,7 @@ def user(request,pk):
             requested_books = json.loads(librarian.requested_books)
             context = {"user": librarian, "requested_books": requested_books}
     else:
+        
         student = Student.objects.get(mis=pk)
         if (student.requested_books == ""):
             context = {"user": student}
