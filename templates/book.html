@@ -80,7 +80,7 @@
                     <button type="submit" class="btn btn-danger w-50" >Retract Borrow Request</button>
                 </a>
             </div>
-            {% elif not is_requested %}
+            {% elif not is_requested and not is_librarian %}
             <div class="row m-3">
                 <a href="{% url 'request' room.id %}">
                     <button type="submit" class="btn btn-success w-50" >Borrow</button>
