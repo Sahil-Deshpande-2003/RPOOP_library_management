@@ -145,7 +145,7 @@ def request_book(request,pk):
     if (student.requested_books == ""): # executed only once
         requested_books = [
             {
-                "id": new_request.id,
+                "id": new_request.book_id,
                 "book_name": room.book_name,
                 "requester_id": student.mis,
                 "requester_name": student.first_name + " " + student.last_name,
@@ -158,7 +158,7 @@ def request_book(request,pk):
         # appends requests to the array
         json_data = json.loads(student.requested_books) # converts string to json format
         json_data.append({
-            "id": new_request.id,
+            "id": new_request.book_id,
             "book_name": room.book_name,
             "requester_id": student.mis,
             "requester_name": student.first_name + " " + student.last_name,
