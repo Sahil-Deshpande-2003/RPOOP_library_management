@@ -36,7 +36,7 @@ def index(request):
     return render(request,'index.html', context) # goes to index.html
 
 
-def categories(request,category):
+def categories(request,category): # Fetches rooms (books) based on the selected category 
     rooms = Room.objects.filter(category__name = category)
     context = {'rooms':rooms , 'category':category}
     return render(request, 'category.html', context)
@@ -45,10 +45,13 @@ def create_category(request):
     if request.user.is_anonymous:
         return redirect("/login")
     
-    if (request.user.groups.filter(name="Student").exists()):
+    if (request.user.groups.filter(name="Student").exists()): # only librarian has permission
         return redirect("/")
 
     form = CategoryForm()
+    '''
+    If any of the required parameters (name, description, image_link) are not present in the POST data, the request.POST.get calls will return None, and trying to create a Category object with None values might raise an exception.
+    '''
     if request.method == 'POST': # POST request is used when we have to submit the form
         try:
             name = request.POST.get('book_name')
@@ -120,7 +123,7 @@ def create_book(request):
             room.save()
         except:
             pass
-    context = {'form' : form, 'categories':categories }
+    context = {'form' : form, 'categories':categories } # why to pass categories here
     return render(request,'create.html',context)
 
 def request_book(request,pk):
@@ -156,6 +159,7 @@ def request_book(request,pk):
         student.save()
     else:
         # appends requests to the array
+        #   This assumes that student.requested_books is a JSON-encoded string
         json_data = json.loads(student.requested_books) # converts string to json format
         json_data.append({
             "id": new_request.book_id,
@@ -164,6 +168,8 @@ def request_book(request,pk):
             "requester_name": student.first_name + " " + student.last_name,
             "request_time": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
         })
+        # So, when you call student.set_requested_books(json_data), it takes a list of dictionaries (json_data), converts it to a JSON string, and sets this string as the value of requested_books for that specific student instance
+        # Thoda dekhna ye part!!!!
         student.set_requested_books(json_data)
         student.save()
 
@@ -206,13 +212,19 @@ def return_book(request,pk):
     return redirect('/book/'+pk)
 
 def approve_book(request,pk):
+
+    # ONCE MORE!!!!!!!!!!!!!!!
+
+    # here pk is request id and not book_id, hence 1st fetch the request from the request id and from the book_id field of request, fetch the book
+
     book_request = Requests.objects.get(request_id=pk)
     
     book = Room.objects.get(id = book_request.book_id)
-    book.book_quantity = book.book_quantity - 1
-    book.save()
+    book.book_quantity = book.book_quantity - 1 # since its issued now
+    book.save() # why?
 
     student = Student.objects.get(mis = book_request.requester_id)
+    # request.user.username is a way to retrieve the username of the currently authenticated user in a Django web application
     issuer = Librarian.objects.get(mis=request.user.username) # alloted a MIS to librarian and the found issuer using that MIS
 
     # remove request from requests object on the student 
@@ -284,18 +296,7 @@ def approve_book(request,pk):
     return redirect("/")
 
 
-def UpdateBookUser(request,pk):
-    room = Room.objects.get(id=pk)
-    form = RoomForm(instance=room)
-    context={}
-    return render(request,'room_form.html',context)
 
-def deletebookUser(request,pk):
-    room = Room.objects.get(id=pk)
-    if request.method=='POST':
-        room.delete()
-        return redirect('display')
-    return render(request,'delete.html',{'obj':room})
 
 
 def loginUser(request):
@@ -334,15 +335,4 @@ def user(request,pk):
             context = {"user": student, "requested_books": requested_books}
     return render(request,'user.html',context)
 
-def createUser(request):
-    if request.method=="POST":
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        try:
-            user = User.objects.create_user(username, email, password)
-            user.save()
-            return redirect("/login")
-        except:
-            return redirect("/user/create")
-    return render(request,'createuser.html')
+

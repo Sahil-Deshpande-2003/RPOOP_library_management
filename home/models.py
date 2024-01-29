@@ -16,7 +16,7 @@ class Category(models.Model): # for book ki categories
 
         return self.name
 
-class Room(models.Model):
+class Room(models.Model): # used to represent books
     id = models.CharField(max_length=200, primary_key=True)
     book_name = models.CharField(max_length=200)
     book_description = models.TextField(null=True)
@@ -58,7 +58,8 @@ class Student(models.Model):
     held_books = models.TextField(null=True, blank=True)
 
     def set_requested_books(self, book_data):
-        self.requested_books = json.dumps(book_data)
+        self.requested_books = json.dumps(book_data) # The json.dumps function is used to convert the Python list (book_data) into a JSON-formatted string
+        # why have u used dumps here??????
 
     def get_requested_books(self):
         return json.loads(self.requested_books)
